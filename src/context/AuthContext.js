@@ -1,129 +1,111 @@
-/* TODO: Remember to import any required hooks from the react library */
-import React from 'react';
+import React, { useReducer } from 'react';
 
-// Auth context object
-// users: list of registered users
-// user: currently logged in user
-// authenticated: boolean indicating 
 const initialState = {
     users: [],
     user: null,
     authenticated: false
 }
 
-// Dispatch types (for the reducer function)
 const LOGIN = 'LOGIN';
 const LOGOUT = 'LOGOUT';
 const REGISTER = 'REGISTER';
 
-/* TODO: create an auth context object, using the initial state provided */
+const AuthContext = React.createContext(initialState);
 
-/* TODO: set up a reducer function to deal with the different auth actions */
+const AuthReducer = (state, action) => {
+    switch(action.type) {
+        case LOGIN:
+            return {
+                ...state,
+                user: action.payload,
+                authenticated: true
+            }
+        case LOGOUT:
+            return {
+                ...state,
+                user: null,
+                authenticated: false
+            }
+        case REGISTER:
+            return {
+                ...state,
+                users: [action.payload, ...state.users],
+                user: action.payload,
+                authenticated: true
+            }
+        default: return state;
+    }
+}
 
-/*
-    Since the slides don't cover updating a state object which has multiple
-    properties, here's an important piece of info:
-    When you update a particular property, you should also assign other 
-    properties to their previous values.
-    So for example, the LOGOUT case would look like this:
+export const AuthContextProvider = (props) => {
+    const [state, dispatch] = useReducer(AuthReducer, initialState);
 
-    case LOGOUT:
-        return {
-            users: state.users,
-            user: null,
-            authenticated: false
+    // Login user
+    const login = (user) => {
+        // Check if user exists and has correct credentials
+        let userExists = false;
+        let loggedInUser = null;
+        state.users.forEach(cur_user => {
+            if (cur_user.email === user.email) {
+                userExists = true;
+                loggedInUser = cur_user;
+            }
+        })
+
+        if (!userExists) {
+            throw new Error('User does not exist');
         }
 
-    Why? Because you are assigning this object to the state. So, if you do something 
-    like this:
+        if (loggedInUser.password !== user.password) {
+            throw new Error('Passwords do not match');
+        }
 
-    return {
-        user: null,
-        authenticated: false
+        dispatch({
+            type: LOGIN,
+            payload: loggedInUser
+        });
     }
 
-    You will lose the users list from the state.
-
-    Another way to do this is by using something called a spread operator
-    (Yeah I know we didn't cover it in class, but hey learning something new is always a good thing)
-
-    The return for LOGOUT would then look something like this:
-
-    return {
-        ...state,
-        user: null,
-        authenticated: false
+    // Logout user
+    const logout = () => {
+        // Dispatch logout request to reducer
+        dispatch({
+            type: LOGOUT
+        });
     }
 
-    Look up the spread operator if you're interested.
-    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
-*/
+    // Register user
+    const register = (user) => {
+        // Check if user already exists
+        let userExists = false;
+        state.users.forEach(cur_user => {
+            if (cur_user.email === user.email) {
+                userExists = true;
+            }
+        })
 
-/* TODO: Export a provider which will maintain state and 
-    handle dispatching requests */
+        if (userExists) {
+            throw new Error('User already exists');
+        }
 
-    /* TODO: Set up auth context state using the useReducer hook */
+        // Dispatch register request to reducer
+        dispatch({
+            type: REGISTER,
+            payload: user
+        });
+    }
 
-    // TODO
-    // @func    login()
-    // @params  user  -  the user object
-    // @desc    logs the user in if the user exists; if the user does not exist, 
-    //          or the passwords do not match, it throws a respective error
-    // @access  public
+    return (
+        <AuthContext.Provider value={{
+            user: state.user,
+            authenticated: state.authenticated,
+            login,
+            logout,
+            register
+        }}>
+            {props.children}
+        </AuthContext.Provider>
+    )
+}
 
-    /*
-        If you're having trouble with this function, you can follow these steps:
-        1. Initialize two variables:
-            (i)     one to check whether the user exists
-            (ii)    one that contains the user if found
-        2. Loop through the user array, and find the user using the email from 
-            the user object (passed in as argument)
-        3. Check for the requirements:
-            (i)     If the user object (initially null) is still null, it means the 
-                    user was not found, and you should throw a respective error
-            (ii)    If the user object is not null, check the password in the object 
-                    with the one from the object received in the argument. If they don't 
-                    match, throw an error
-        4. Use the dispatch() function with type as LOGIN and the user object from the argument 
-            as the payload
-    */
-
-
-    // TODO
-    // @func    logout()
-    // @params  None
-    // @desc    Logs the user out
-    // @access  Public
-
-    /*
-        This one should be pretty simple. All you need to do here is 
-        call the dispatch() function with a type of LOGOUT.
-    */
-    
-
-    // TODO
-    // @func    register()
-    // @params  user  -  the user object
-    // @desc    registers the user by adding them to the list; if a user with 
-    //          the given email already exists, it throws an error
-    // @access  Public
-
-    /*
-        If you're having trouble with this function, you can follow these steps:
-        1. Initialize a variable to check whether the user already exists
-        2. Loop through the user array, and find the user using the email from 
-            the user object (passed in as argument)
-        3. Check for the requirements:
-            (i)     If the user object (initially null) is no longer null, it means a
-                    user with the given email was found. In this case, throw an error
-                    (For the sake of this lab, you can't have two users with the same email)
-        4. Use the dispatch() function with type as REGISTER and the user object from the argument 
-            as the payload
-    */
-    
-    // TODO
-    // @return  provider component with the state values and the functions 
-    // (remember to wrap props.children within the provider)
-
-
-/* TODO: export the default context object */
+export default AuthContext
