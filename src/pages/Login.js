@@ -1,15 +1,14 @@
-// Remember to import any required hooks from the react library
-import React from 'react'
+import React, { useContext } from 'react'
 import LoginForm from '../components/LoginForm'
-
-/* TODO: Import the auth context from the file you created */
+import AuthContext from '../context/AuthContext';
 
 const Login = ({ history }) => {
-    /* TODO: Create a context variable for the auth context */
+    const authContext = useContext(AuthContext);
 
     const loginUser = (user) => {
+        // Log the user in using context
         try {
-            /* TODO: Log the user in using the context variable */
+            authContext.login(user);
             history.push('/');
         } catch (err) {
             alert(err.message);

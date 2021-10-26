@@ -1,16 +1,15 @@
-/* TODO: Remember to import the context hook from the react library */
-import React from 'react'
+import React, { useContext } from 'react'
 import SignupForm from '../components/SignupForm'
-
-/* TODO: Import the auth context from the file you created */
+import AuthContext from '../context/AuthContext';
 
 const Signup = ({ history }) => {
-    /* TODO: Create a context variable for the auth context */
+    const authContext = useContext(AuthContext);
 
     const signupUser = (user) => {
         user.id = Math.random().toString();
+        // Register the user through context
         try {
-            /* TODO: Register the user using the context variable */
+            authContext.register(user);
             history.push('/');
         } catch (err) {
             alert(err.message);
