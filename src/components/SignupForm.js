@@ -1,23 +1,25 @@
-/* TODO: Remember to import any required hooks from the react library */
-import React from 'react'
+import React, { useState } from 'react'
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const SignupForm = (props) => {
-	/* TODO: Set up state for the form data using useState */
+	const [formData, setFormData] = useState({
+		name: '',
+		email: '',
+		password: '',
+		password2: ''
+	})
 
-	/* TODO: Set up a function (or multiple functions) to 
-		change the state for the form data */
+	const handleChange = (e) => {
+		setFormData({
+			...formData,
+			[e.target.name]: e.target.value
+		});
+	}
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-		// TODO
-		// Create a user object if you have used 
-		// multiple states
-		// If you have a single user object set up,
-		// you can directly pass that into the function
-        props.signup(/* user object */);
+        props.signup(formData);
     }
 
     return (
@@ -29,7 +31,7 @@ const SignupForm = (props) => {
 					type="text"
 					className="form-control"
                     required
-					/* TODO: Remember to connect an input event to an event handler */ 
+					onChange={handleChange}
 				/>
 			</div>
 			<div className="form-group m-3">
@@ -39,7 +41,7 @@ const SignupForm = (props) => {
 					type="email"
 					className="form-control"
                     required
-					/* TODO: Remember to connect an input event to an event handler */ 
+					onChange={handleChange}
 				/>
 			</div>
 			<div className="form-group m-3">
@@ -49,7 +51,7 @@ const SignupForm = (props) => {
 					type="password"
 					className="form-control"
                     required
-					/* TODO: Remember to connect an input event to an event handler */ 
+					onChange={handleChange}
 				/>
 			</div>
 			<div className="form-group m-3">
@@ -59,7 +61,7 @@ const SignupForm = (props) => {
 					type="password"
 					className="form-control"
                     required
-					/* TODO: Remember to connect an input event to an event handler */ 
+					onChange={handleChange}
 				/>
 			</div>
 			<button type="submit" className="btn btn-dark">

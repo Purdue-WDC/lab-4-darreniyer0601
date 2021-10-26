@@ -1,18 +1,14 @@
-/* TODO: Remember to import any required hooks from the react library */
-import React from "react";
-
-/* TODO: Import the list context from the context file */
+import React, { useContext } from "react";
+import ListContext from "../context/ListContext";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const ListItem = ({ item }) => {
-	const { id, content } = item;
-
-	/* TODO: Create a context variable for the list context */
+const ListItem = (props) => {
+	const { id, content } = props.item;
+	const { removeItem } = useContext(ListContext);
 
 	const handleDelete = () => {
-		/* TODO: Use the list context's remove item function 
-		 to remove the list item by passing in the id */
+		removeItem(id);
 	};
 
 	return (
